@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE softpkg PUBLIC "-//JTRS//DTD SCA V2.2.2 SPD//EN" "softpkg.dtd">
+<softpkg id="DCE:621c4174-7609-4fb9-8b93-c9af20dd25a9" name="QAM" type="sca_compliant">
+  <title></title>
+  <author>
+    <name>Kyle Velez</name>
+  </author>
+  <description>Performs Quadrature Amplitude Demodulation on the input signal at the specified bit rate using the liquid-dsp library</description>
+  <propertyfile type="PRF">
+    <localfile name="QAM.prf.xml"/>
+  </propertyfile>
+  <descriptor>
+    <localfile name="QAM.scd.xml"/>
+  </descriptor>
+  <implementation id="cpp">
+    <description>The implementation contains descriptive information about the template for a software component.</description>
+    <code type="Executable">
+      <localfile name="cpp/QAM"/>
+      <entrypoint>cpp/QAM</entrypoint>
+    </code>
+    <compiler name="/usr/bin/gcc" version="4.1.2"/>
+    <programminglanguage name="C++"/>
+    <humanlanguage name="EN"/>
+    <os name="Linux"/>
+    <processor name="x86"/>
+    <processor name="x86_64"/>
+    <dependency type="allocation">
+      <softpkgref>
+        <localfile name="/deps/liquid_dsp_v1/liquid_dsp_v1.spd.xml"/>
+      </softpkgref>
+    </dependency>
+  </implementation>
+</softpkg>
