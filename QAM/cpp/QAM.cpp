@@ -15,7 +15,6 @@ QAM_i::QAM_i(const char *uuid, const char *label) :
     QAM_base(uuid, label)
 {
 	addPropertyChangeListener("bitRate",this,&QAM_i::bitRateChanged);
-	//QAM_i::createModem();
 	qam_modem = NULL;
 	m_delta = 0.0;
 	m_sriOut = bulkio::sri::create("QAM_OUT");
@@ -198,32 +197,34 @@ int QAM_i::serviceFunction()
 
 		unsigned int size = preDemod->size();
 		output.resize(size);
-		//Change and push new SRI if necessary
-		if(input->sriChanged){
-			m_delta = input->SRI.xdelta;
-			m_sriOut = input->SRI;
-			m_sriOut.mode = 0;
-			createModem();
-			dataDouble_out->pushSRI(m_sriOut);
-		}
 		//Double vector to cast the output into so it can be pushed to the uses port since
 		//it seems an unsigned int port type doesn't exist.
 		std::vector<double> dbout;
 		dbout.resize(size);
-		//Demodulate the input signal and store it in output vector using [liquid] BPSK demod
-		for(unsigned int i = 0; i < size; i++){
-			modem_demodulate(qam_modem, preDemod->at(i), &output[i]);
-			dbout[i] = output[i];
-		}
+		//Change and push new SRI if necessary
+		{
+			boost::mutex::scoped_lock lock(propLock_);
 
+			if(input->sriChanged){
+				m_delta = input->SRI.xdelta;
+				m_sriOut = input->SRI;
+				m_sriOut.mode = 0;
+				createModem();
+				dataDouble_out->pushSRI(m_sriOut);
+			}
+
+			//Demodulate the input signal and store it in output vector using [liquid] BPSK demod
+			for(unsigned int i = 0; i < size; i++){
+				modem_demodulate(qam_modem, preDemod->at(i), &output[i]);
+				dbout[i] = output[i];
+			}
+		}
 		dataDouble_out->pushPacket(dbout, input->T, input->EOS, input->streamID);
 		delete input;
 		return NORMAL;
 }
 void QAM_i::createModem(void)
 {
-	//boost::mutex::scoped_lock lock(propLock_);
-
 	if(qam_modem){
 		modem_destroy(qam_modem);
 		qam_modem = NULL;
