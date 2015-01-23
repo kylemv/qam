@@ -48,7 +48,7 @@ To use these components
 
 4) The component is now ready for use in Redhawk. For more information on components in Redhawk, see chapters 3 and 4 in the documentation located here:
 
-  	-http://redhawksdr.github.io/Documentation/main.html
+-http://redhawksdr.github.io/Documentation/main.html
 
 For more information on Redhawk see http://redhawksdr.github.io/Documentation/index.html
 
