@@ -186,42 +186,38 @@ void QAM_i::bitRateChanged(const unsigned short *oldVal, const unsigned short *n
 int QAM_i::serviceFunction()
 {
 	//get input data from dataFloat_in
-		bulkio::InFloatPort::dataTransfer *input = dataFloat_in->getPacket(bulkio::Const::BLOCKING);
-		//check that the input stream is ok
-		if(not input)
-			return NOOP;
-		//put the modulated data into a complex float vector
-		std::vector< std::complex<float> >* preDemod = (std::vector<std::complex<float> >*) &(input->dataBuffer);
-		//integer vector for demodulated output
-		std::vector<unsigned int> output;
+	bulkio::InFloatPort::dataTransfer *input = dataFloat_in->getPacket(bulkio::Const::BLOCKING);
+	//check that the input stream is ok
+	if(not input)
+		return NOOP;
+	//put the modulated data into a complex float vector
+	std::vector< std::complex<float> >* preDemod = (std::vector<std::complex<float> >*) &(input->dataBuffer);
+	//integer vector for demodulated output
+	std::vector<unsigned int> output;
 
-		unsigned int size = preDemod->size();
-		output.resize(size);
-		//Double vector to cast the output into so it can be pushed to the uses port since
-		//it seems an unsigned int port type doesn't exist.
-		std::vector<double> dbout;
-		dbout.resize(size);
-		//Change and push new SRI if necessary
-		{
-			boost::mutex::scoped_lock lock(propLock_);
+	unsigned int size = preDemod->size();
+	output.resize(size);
 
-			if(input->sriChanged){
-				m_delta = input->SRI.xdelta;
-				m_sriOut = input->SRI;
-				m_sriOut.mode = 0;
-				createModem();
-				dataDouble_out->pushSRI(m_sriOut);
-			}
+	{
+		boost::mutex::scoped_lock lock(propLock_);
 
-			//Demodulate the input signal and store it in output vector using [liquid] BPSK demod
-			for(unsigned int i = 0; i < size; i++){
-				modem_demodulate(qam_modem, preDemod->at(i), &output[i]);
-				dbout[i] = output[i];
-			}
+		if(input->sriChanged){
+			//Change and push new SRI if necessary
+			m_delta = input->SRI.xdelta;
+			m_sriOut = input->SRI;
+			m_sriOut.mode = 0;
+			createModem();
+			dataLong_out->pushSRI(m_sriOut);
 		}
-		dataDouble_out->pushPacket(dbout, input->T, input->EOS, input->streamID);
-		delete input;
-		return NORMAL;
+
+		//Demodulate the input signal and store it in an output vector using [liquid] BPSK demod
+		for(unsigned int i = 0; i < size; i++){
+			modem_demodulate(qam_modem, preDemod->at(i), &output[i]);
+		}
+	}
+	dataLong_out->pushPacket(output, input->T, input->EOS, input->streamID);
+	delete input;
+	return NORMAL;
 }
 void QAM_i::createModem(void)
 {

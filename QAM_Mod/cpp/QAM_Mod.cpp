@@ -203,7 +203,7 @@ int QAM_Mod_i::serviceFunction()
 			//Change and push new SRI if necessary
 			m_delta = input->SRI.xdelta;
 			m_sriOut = input->SRI;
-			m_sriOut.mode = 0;
+			m_sriOut.mode = 1;
 			createModem();
 			dataFloat_out->pushSRI(m_sriOut);
 		}

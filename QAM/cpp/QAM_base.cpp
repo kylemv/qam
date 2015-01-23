@@ -18,16 +18,16 @@ QAM_base::QAM_base(const char *uuid, const char *label) :
 
     dataFloat_in = new bulkio::InFloatPort("dataFloat_in");
     addPort("dataFloat_in", dataFloat_in);
-    dataDouble_out = new bulkio::OutDoublePort("dataDouble_out");
-    addPort("dataDouble_out", dataDouble_out);
+    dataLong_out = new bulkio::OutULongPort("dataLong_out");
+    addPort("dataLong_out", dataLong_out);
 }
 
 QAM_base::~QAM_base()
 {
     delete dataFloat_in;
     dataFloat_in = 0;
-    delete dataDouble_out;
-    dataDouble_out = 0;
+    delete dataLong_out;
+    dataLong_out = 0;
 }
 
 /*******************************************************************************************

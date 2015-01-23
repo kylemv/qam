@@ -27,7 +27,7 @@ class QAM_base : public Resource_impl, protected ThreadedComponent
 
         // Ports
         bulkio::InFloatPort *dataFloat_in;
-        bulkio::OutDoublePort *dataDouble_out;
+        bulkio::OutULongPort *dataLong_out;
 
     private:
 };
