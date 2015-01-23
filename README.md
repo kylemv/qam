@@ -19,9 +19,9 @@ To use these components
 
 -Run the following
 	
-			./bootstrap.sh
-		 	./configure
-		 	make
+		./bootstrap.sh
+		./configure
+		make
 	  	sudo make install
 
 3) Get the component code
